@@ -1,1 +1,47 @@
- 
+// Clock 页面置换算法
+
+#include <stdio.h>
+
+int main() {
+    int frames, n, pageFaults = 0, hand = 0;
+    printf("物理块数: ");
+    scanf("%d", &frames);
+    printf("引用序列长度: ");
+    scanf("%d", &n);
+    int ref[n];
+    printf("输入引用序列: ");
+    for (int i = 0; i < n; i++) scanf("%d", &ref[i]);
+    
+    int mem[frames], used[frames];
+    for (int i = 0; i < frames; i++) mem[i] = -1, used[i] = 0;
+    
+    for (int i = 0; i < n; i++) {
+        int found = 0;
+        for (int j = 0; j < frames; j++) {
+            if (mem[j] == ref[i]) {
+                found = 1;
+                used[j] = 1;
+                break;
+            }
+        }
+        if (!found) {
+            while (1) {
+                if (used[hand] == 0) {
+                    mem[hand] = ref[i];
+                    used[hand] = 1;
+                    hand = (hand + 1) % frames;
+                    break;
+                } else {
+                    used[hand] = 0;
+                    hand = (hand + 1) % frames;
+                }
+            }
+            pageFaults++;
+        }
+        printf("引用 %d: ", ref[i]);
+        for (int j = 0; j < frames; j++) printf("%d(%d) ", mem[j], used[j]);
+        printf("\n");
+    }
+    printf("缺页次数: %d\n", pageFaults);
+    return 0;
+}
